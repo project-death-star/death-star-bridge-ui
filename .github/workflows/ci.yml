@@ -94,6 +94,19 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
 
+      - name: Generate SBOM
+        uses: anchore/syft-action@v0
+        with:
+          image: 'ghcr.io/${{ github.repository }}:${{ github.sha }}'
+          format: 'spdx-json'
+          output-file: 'sbom.spdx.json'
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom
+          path: sbom.spdx.json
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
 
