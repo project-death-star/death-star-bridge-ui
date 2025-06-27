@@ -1,15 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { isEnabled } from '../lib/feature-flags';
 
 export default function Home() {
   const [status, setStatus] = useState('loading...');
 
   useEffect(() => {
     const fetchStatus = async () => {
-      // The BFF URL is read from a public environment variable.
-      // This allows the same frontend code to be deployed against different
-      // backend environments (local, staging, production).
+      if (!isEnabled('FF_HEALTH_CHECK_VIEW')) {
+        setStatus('disabled');
+        return;
+      }
+
       const bffUrl = process.env.NEXT_PUBLIC_BFF_URL || 'http://localhost:8080';
       
       try {
@@ -18,7 +21,6 @@ export default function Home() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        // We expect the body to be `{"status": "ok"}`
         if (data.status === 'ok') {
           setStatus('ok');
         } else {
@@ -31,7 +33,7 @@ export default function Home() {
     };
 
     fetchStatus();
-  }, []); // The empty dependency array ensures this effect runs only once on mount.
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
