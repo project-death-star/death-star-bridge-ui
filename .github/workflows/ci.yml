@@ -42,8 +42,24 @@ jobs:
         with:
           config: "p/default"
 
+  sca-scan:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner in fs mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          ignore-unfixed: true
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
   build-and-push-docker-image:
-    needs: [build-and-test, sast-scan]
+    needs: [build-and-test, sast-scan, sca-scan]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
