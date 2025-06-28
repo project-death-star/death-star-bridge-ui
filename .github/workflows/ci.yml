@@ -10,8 +10,25 @@ on:
 #                      VALIDATION AND QUALITY JOBS
 # =================================================================
 jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+
   lint:
     name: Lint Code
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,7 +45,7 @@ jobs:
 
   test:
     name: Run Unit Tests
-    needs: lint
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -42,23 +59,6 @@ jobs:
         run: npm ci
       - name: Test
         run: npm run test
-
-  build:
-    name: Build Application
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
 
 # =================================================================
 #                      SECURITY SCAN JOBS
@@ -97,7 +97,7 @@ jobs:
 # =================================================================
   build-sign-and-publish-image:
     name: Build, Sign, and Publish Image
-    needs: [sast-scan, sca-scan]
+    needs: [lint, test, sast-scan, sca-scan]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     permissions:
@@ -156,4 +156,5 @@ jobs:
           subject-name: ghcr.io/${{ github.repository }}
           subject-digest: ${{ steps.docker_build.outputs.digest }}
           push-to-registry: true
+
 
