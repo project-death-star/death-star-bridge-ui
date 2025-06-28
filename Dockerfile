@@ -21,9 +21,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files and install production dependencies
+# Copy package files and node_modules from builder
 COPY --from=builder /app/package*.json ./
-RUN npm ci --omit=dev && npm cache clean --force
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy the built application from the builder stage
 COPY --from=builder /app/.next ./.next
