@@ -109,7 +109,11 @@ jobs:
       - name: Sign the container image
         run: cosign sign --yes ghcr.io/${{ github.repository }}@${{ steps.docker_build.outputs.digest }}
 
-      - name: Generate SLSA provenance
-        uses: slsa-framework/slsa-github-generator@v1
+      - name: Generate SLSA provenance attestation
+        uses: actions/attest-build-provenance@v1
+        continue-on-error: true
+        if: github.repository_owner != '' && !github.event.repository.fork
         with:
-          image-digest: ${{ steps.docker_build.outputs.digest }}
+          subject-name: ghcr.io/${{ github.repository }}
+          subject-digest: ${{ steps.docker_build.outputs.digest }}
+          push-to-registry: true
