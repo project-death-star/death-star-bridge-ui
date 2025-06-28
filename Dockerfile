@@ -23,7 +23,7 @@ WORKDIR /app
 
 # Copy package files and install production dependencies
 COPY --from=builder /app/package*.json ./
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
 # Copy the built application from the builder stage
 COPY --from=builder /app/.next ./.next
