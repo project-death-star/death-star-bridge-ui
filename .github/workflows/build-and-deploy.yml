@@ -105,11 +105,11 @@ jobs:
           # Get digest
           echo "digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ steps.meta.outputs.tags }} | cut -d'@' -f2)" >> $GITHUB_OUTPUT
 
-      - name: 🔒 Generate SLSA Provenance
-        uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v2.0.0
-        with:
-          image: ${{ steps.meta.outputs.tags }}
-          digest: ${{ steps.build.outputs.digest }}
+      - name: 📋 Image Summary
+        run: |
+          echo "# 🐳 Docker Image Built" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: \`${{ steps.meta.outputs.tags }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Latest**: \`${{ steps.meta.outputs.latest-tag }}\`" >> $GITHUB_STEP_SUMMARY
 
   update-infrastructure:
     name: 🔄 Update Infrastructure
