@@ -11,8 +11,8 @@ env:
   PROJECT_ID: death-star-platform-666
   REGION: us-central1
   REGISTRY: us-central1-docker.pkg.dev
-  REPOSITORY: ghcr-remote
-  IMAGE_NAME: project-death-star/death-star-bridge-ui
+  REPOSITORY: death-star-images
+  IMAGE_NAME: death-star-bridge-ui
   SERVICE_NAME: bridge-ui
   NODE_VERSION: '20'
 
