@@ -130,7 +130,7 @@ jobs:
           cd infrastructure
           
           # Update the image tag in cloudrun.tf
-          sed -i 's|image = ".*death-star-bridge-ui.*"|image = "${{ needs.build-and-push.outputs.image-tag }}"|g' cloudrun.tf
+          sed -i 's|death-star-bridge-ui:latest|death-star-bridge-ui:${{ github.sha }}|g' cloudrun.tf
           
           # Verify the change
           echo "Updated cloudrun.tf:"
